@@ -51,4 +51,8 @@ while True:
     print(f"URL : {url}") 
     url = f"{base_line}?sf_paged={page_number+1}"
     page_number = page_number + 1
+<<<<<<< HEAD
 csv_file.close()
+=======
+csv_file.close()
+>>>>>>> bd0e993a432b997bfc9aa83ebd671988f4ebf8d9
