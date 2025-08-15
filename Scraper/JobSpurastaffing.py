@@ -40,14 +40,24 @@ for page in range(1, 7):
         titles = tree.xpath('//span[@class = "text-block-base-link sm:min-w-[25%] sm:truncate company-link-style hyphens-auto"]/text()')
         links = tree.xpath('//a[@class = "flex flex-col py-6 text-center sm:px-6 hover:bg-gradient-block-base-bg"]/@href')
         for title_of_job , location_city ,location_state,link in zip(titles, location_city,location_state, links):
+            description_resp = requests.get(link,headers=headers)
+            tree = html.fromstring(description_resp.content)
+            description = tree.xpath('//div[@class="mx-auto max-w-[750px] prose font-company-body overflow-hidden break-words [&_ol_li_li]:list-[lower-alpha]"]/p[1]/text()')
+            description_list = [desp.strip() for desp in description if desp.strip()]
+            duties_points = tree.xpath('//div[@class="mx-auto max-w-[750px] prose font-company-body overflow-hidden break-words [&_ol_li_li]:list-[lower-alpha]"]/ul[1]/li/text()')
+            duties_point_list = [duties.strip() for duties in duties_points if duties.strip()]
+            qualification_points = tree.xpath('//div[@class="mx-auto max-w-[750px] prose font-company-body overflow-hidden break-words [&_ol_li_li]:list-[lower-alpha]"]/ul[2]/li/text()')
+            qualfication_points_list = [qualification.strip() for qualification in qualification_points if qualification.strip()]
             all_jobs.append({
-                "title": title_of_job.strip(),
-                "location": (location_city + ", " + location_state).strip(),
-                "link": link
-            })
-
+            "Job Title": title_of_job.strip(),
+            "Job URL": link,
+            "Job Description":" ".join(description),
+            "Job location": f"{location_city}, {location_state}".strip(),
+            "Job Duties": " | ".join(duties_point_list),
+            "Job Qualification": " | ".join(qualfication_points_list)
+        })
 with open("JobsSpurstaffing.csv", "w", newline="", encoding="utf-8") as f:
-    writer = csv.DictWriter(f, fieldnames=["Title", "location", "link"])
+    writer = csv.DictWriter(f, fieldnames=["Job Title","Job URL","Job Description","Job location","Job Duties","Job Qualification"])
     writer.writeheader()
     writer.writerows(all_jobs)
 
